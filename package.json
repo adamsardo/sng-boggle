@@ -1,0 +1,41 @@
+{
+  "name": "boggle-party-clone",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:engine": "vitest run src/engine",
+    "test:controller": "vitest run src/ui/controller",
+    "test:worker": "vitest run -c vitest.worker.config.ts",
+    "test:e2e": "playwright test",
+    "check:phase2": "npm run typecheck && npm run test:engine && npm run test:controller && npm run test:e2e",
+    "check": "npm run typecheck && npm run test && npm run test:worker",
+    "dictionary:build": "node scripts/build-dictionary.mjs",
+    "cf:types": "wrangler types src/worker/worker-configuration.d.ts",
+    "deploy:dry-run": "wrangler deploy --dry-run"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^5.1.2",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "vite": "^7.2.7"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.16.10",
+    "@cloudflare/workers-types": "^4.20260529.0",
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^25.9.1",
+    "@types/react": "^19.2.8",
+    "@types/react-dom": "^19.2.3",
+    "jsdom": "^27.3.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0",
+    "word-list": "^4.1.0",
+    "wrangler": "^4.95.0"
+  }
+}

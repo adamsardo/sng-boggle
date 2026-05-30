@@ -1,0 +1,1548 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Boggle Party Clone Decisions</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --ink: #162033;
+      --muted: #667085;
+      --line: #d9e0ec;
+      --panel: #ffffff;
+      --panel-2: #eef4ff;
+      --accent: #129a8e;
+      --accent-ink: #062f31;
+      --accent-soft: #d8fbf2;
+      --purple: #391052;
+      --coral: #f07167;
+      --amber: #f2b84b;
+      --blue: #4277c7;
+      --ok: #178f53;
+      --warn: #9a5b00;
+      --shadow: 0 18px 42px rgba(22, 32, 51, 0.08);
+      --radius: 8px;
+      --control-h: 44px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      letter-spacing: 0;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .app {
+      min-height: 100vh;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(22, 32, 51, 0.1);
+      background: rgba(245, 247, 251, 0.92);
+      backdrop-filter: blur(14px);
+    }
+
+    .topbar-inner {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--purple);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.18);
+      flex: 0 0 auto;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(18px, 2.2vw, 28px);
+      line-height: 1.08;
+      font-weight: 850;
+      letter-spacing: 0;
+    }
+
+    .brand p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .icon-btn,
+    .primary-btn,
+    .secondary-btn {
+      min-height: var(--control-h);
+      border-radius: var(--radius);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 780;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .icon-btn {
+      width: var(--control-h);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      color: var(--ink);
+    }
+
+    .primary-btn {
+      padding: 0 16px;
+      background: var(--accent);
+      color: #fff;
+      box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.15);
+    }
+
+    .secondary-btn {
+      padding: 0 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      color: var(--ink);
+    }
+
+    .icon {
+      width: 19px;
+      height: 19px;
+      flex: 0 0 auto;
+    }
+
+    .hero {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 36px 0 22px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+      gap: 28px;
+      align-items: end;
+    }
+
+    .intro h2 {
+      margin: 0;
+      max-width: 860px;
+      font-size: clamp(32px, 6vw, 70px);
+      line-height: 0.96;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .intro p {
+      margin: 18px 0 0;
+      max-width: 740px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .status-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .progress-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .progress-label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 760;
+      text-transform: uppercase;
+    }
+
+    .progress-count {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--purple);
+    }
+
+    .progress-track {
+      height: 14px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #dfe7f4;
+      box-shadow: inset 0 1px 2px rgba(22, 32, 51, 0.12);
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--amber));
+      transition: width 180ms ease;
+    }
+
+    .filters {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto 18px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-button {
+      min-height: 38px;
+      padding: 0 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--ink);
+      font-weight: 760;
+    }
+
+    .filter-button.is-active {
+      background: var(--purple);
+      border-color: var(--purple);
+      color: #fff;
+    }
+
+    .content {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 0 0 56px;
+    }
+
+    .category {
+      margin-top: 28px;
+      scroll-margin-top: 96px;
+    }
+
+    .category-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 0 10px;
+      border-bottom: 2px solid var(--line);
+    }
+
+    .category-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .category-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(18, 154, 142, 0.14);
+      flex: 0 0 auto;
+    }
+
+    .category h3 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 900;
+    }
+
+    .category-progress {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 760;
+      white-space: nowrap;
+    }
+
+    .question-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      padding-top: 14px;
+    }
+
+    .question-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 28px rgba(22, 32, 51, 0.06);
+      padding: 16px;
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr) auto;
+      gap: 13px;
+      min-height: 270px;
+    }
+
+    .question-card.is-answered {
+      border-color: rgba(18, 154, 142, 0.5);
+      box-shadow: 0 10px 28px rgba(18, 154, 142, 0.1);
+    }
+
+    .question-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .qid {
+      min-width: 32px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius);
+      background: var(--panel-2);
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .mode-tag {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 760;
+      text-transform: uppercase;
+    }
+
+    .question-text {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.32;
+      font-weight: 840;
+    }
+
+    .choices {
+      display: grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    .choice {
+      position: relative;
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      min-height: 42px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfcff;
+      color: var(--ink);
+      transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+    }
+
+    .choice:hover {
+      border-color: rgba(18, 154, 142, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .choice input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .choice-control {
+      width: 20px;
+      height: 20px;
+      margin-top: 1px;
+      border: 2px solid #a9b5c8;
+      background: #fff;
+      flex: 0 0 auto;
+    }
+
+    .choice[data-type="single"] .choice-control {
+      border-radius: 50%;
+    }
+
+    .choice[data-type="multi"] .choice-control {
+      border-radius: 5px;
+    }
+
+    .choice input:checked + .choice-control {
+      border-color: var(--accent);
+      background: var(--accent);
+      box-shadow: inset 0 0 0 4px #fff;
+    }
+
+    .choice input:checked ~ .choice-copy .choice-title {
+      color: var(--accent-ink);
+    }
+
+    .choice:has(input:checked) {
+      border-color: rgba(18, 154, 142, 0.65);
+      background: var(--accent-soft);
+    }
+
+    .choice-title {
+      display: block;
+      font-size: 14px;
+      line-height: 1.25;
+      font-weight: 840;
+    }
+
+    .choice-desc {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.32;
+    }
+
+    .note {
+      width: 100%;
+      min-height: 42px;
+      resize: vertical;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      padding: 10px 11px;
+      color: var(--ink);
+      background: #fbfcff;
+      line-height: 1.4;
+    }
+
+    .note:focus,
+    .filter-button:focus,
+    .icon-btn:focus,
+    .primary-btn:focus,
+    .secondary-btn:focus,
+    .choice:focus-within {
+      outline: 3px solid rgba(18, 154, 142, 0.25);
+      outline-offset: 2px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 50;
+      max-width: min(360px, calc(100vw - 36px));
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      background: var(--ink);
+      color: #fff;
+      font-weight: 760;
+      line-height: 1.35;
+      box-shadow: var(--shadow);
+      transform: translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .toast.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .summary-panel {
+      display: none;
+      width: min(1180px, calc(100vw - 32px));
+      margin: 24px auto 56px;
+      background: #101827;
+      color: #eef4ff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .summary-panel.is-visible {
+      display: block;
+    }
+
+    .summary-toolbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 14px 16px;
+    }
+
+    .summary-toolbar h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .summary-panel pre {
+      margin: 0;
+      padding: 16px;
+      overflow: auto;
+      max-height: 520px;
+      font-size: 13px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .empty-state {
+      margin: 24px 0 0;
+      padding: 24px;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.7);
+      font-weight: 760;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .topbar-inner,
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        justify-content: flex-start;
+      }
+
+      .question-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 24px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .topbar-inner,
+      .hero,
+      .filters,
+      .content,
+      .summary-panel {
+        width: min(100vw - 20px, 1180px);
+      }
+
+      .topbar-inner {
+        padding: 10px 0;
+      }
+
+      .brand {
+        align-items: flex-start;
+      }
+
+      .mark {
+        width: 36px;
+        height: 36px;
+      }
+
+      .brand p {
+        display: none;
+      }
+
+      .actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .actions .icon-btn {
+        width: 100%;
+      }
+
+      .primary-btn,
+      .secondary-btn {
+        width: 100%;
+        padding: 0 10px;
+      }
+
+      .question-card {
+        min-height: auto;
+        padding: 14px;
+      }
+
+      .category-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        transition-duration: 0.001ms !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="mark" aria-hidden="true">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M7 7h10v10H7z" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"></path>
+              <path d="M7 11h10M11 7v10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"></path>
+            </svg>
+          </div>
+          <div>
+            <h1>Boggle Party Clone Decisions</h1>
+            <p>Selections are saved in this browser and can be exported for the spec.</p>
+          </div>
+        </div>
+        <div class="actions" aria-label="Artifact actions">
+          <button class="secondary-btn" id="copyMarkdown" type="button" title="Copy answers as Markdown">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="8" y="8" width="10" height="12" rx="2" stroke="currentColor" stroke-width="2"></rect>
+              <path d="M6 16H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+            </svg>
+            Copy
+          </button>
+          <button class="secondary-btn" id="downloadJson" type="button" title="Download answers as JSON">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 3v11" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+              <path d="m7 10 5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M5 19h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+            </svg>
+            JSON
+          </button>
+          <button class="secondary-btn" id="toggleSummary" type="button" title="Show answer summary">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 6h14M5 12h14M5 18h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+            </svg>
+            Summary
+          </button>
+          <button class="primary-btn" id="jumpNext" type="button" title="Jump to the next unanswered question">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+              <path d="m13 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            Next
+          </button>
+          <button class="icon-btn" id="resetAll" type="button" title="Clear all answers" aria-label="Clear all answers">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 7h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+              <path d="M9 7V5h6v2m-8 0 1 13h8l1-13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="intro">
+        <h2>Answer the build-shaping questions fast.</h2>
+        <p>Pick the closest option for each decision. Add notes only where the answer needs texture.</p>
+      </div>
+      <aside class="status-panel" aria-label="Completion status">
+        <div class="progress-row">
+          <span class="progress-label">Answered</span>
+          <span class="progress-count"><span id="answeredCount">0</span>/<span id="totalCount">40</span></span>
+        </div>
+        <div class="progress-track" aria-hidden="true">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </aside>
+    </section>
+
+    <nav class="filters" id="filters" aria-label="Question categories"></nav>
+    <main class="content" id="questionRoot"></main>
+
+    <section class="summary-panel" id="summaryPanel" aria-label="Answer summary">
+      <div class="summary-toolbar">
+        <h3>Answer Summary</h3>
+        <button class="secondary-btn" id="closeSummary" type="button">Close</button>
+      </div>
+      <pre id="summaryOutput"></pre>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const STORAGE_KEY = "boggle-party-decision-answers-v1";
+
+    const categories = [
+      {
+        id: "product",
+        title: "Product and Legal Boundary",
+        accent: "#129a8e",
+        questions: [
+          {
+            id: 1,
+            type: "single",
+            text: "Should the shipped product use a new name and original visual identity while retaining the Boggle Party-style mechanics?",
+            choices: [
+              ["new_identity", "New identity, same style of play", "Best fit for public or shareable deployment."],
+              ["internal_clone", "Internal clone naming", "Okay only for private prototype discussion."],
+              ["exact_brand", "Use Netflix/Boggle naming", "Highest legal and distribution risk."],
+              ["undecided", "Decide later", "Keep implementation brand-neutral for now."]
+            ]
+          },
+          {
+            id: 2,
+            type: "single",
+            text: "How close should visual parity be?",
+            choices: [
+              ["recognizable_layout", "Recognizable layout and feel", "Match flow, density, color energy, and controls without original assets."],
+              ["near_pixel", "Near-pixel clone for private prototype", "Use only if this remains internal research."],
+              ["inspired_original", "Inspired original direction", "Keep mechanics but make a distinct brand/UI."],
+              ["functional_first", "Functional first", "Prioritize game engine and multiplayer over fidelity."]
+            ]
+          },
+          {
+            id: 3,
+            type: "single",
+            text: "Is this intended for private use, public deployment, or commercial use?",
+            choices: [
+              ["private", "Private use", "Fastest path; lower polish/compliance burden."],
+              ["public_free", "Public free deployment", "Needs original branding, moderation, and ops."],
+              ["commercial", "Commercial product", "Needs legal review, licensed assets/data, and stronger ops."],
+              ["prototype_then_decide", "Prototype, then decide", "Build with public-safe boundaries from the start."]
+            ]
+          },
+          {
+            id: 4,
+            type: "single",
+            text: "Should user-facing UI include Boggle terminology?",
+            choices: [
+              ["avoid_boggle", "Avoid Boggle in UI", "Use generic word-grid language."],
+              ["descriptive_mentions", "Use descriptive mentions only", "Useful in docs, not product chrome."],
+              ["use_boggle", "Use Boggle-facing copy", "Works only for private clone testing."],
+              ["undecided", "Decide later", "Keep names abstract in code and copy."]
+            ]
+          }
+        ]
+      },
+      {
+        id: "platform",
+        title: "Platform and Deployment",
+        accent: "#4277c7",
+        questions: [
+          {
+            id: 5,
+            type: "single",
+            text: "Should this be web-only, or should native mobile apps be planned later?",
+            choices: [
+              ["web_only", "Web-only v1", "Best fit for QR join and remote sessions."],
+              ["web_then_native", "Web now, native later", "Keep APIs portable."],
+              ["native_parallel", "Native in parallel", "More work before proving the loop."],
+              ["undecided", "Decide later", "Avoid native-specific assumptions."]
+            ]
+          },
+          {
+            id: 6,
+            type: "single",
+            text: "Where should production run?",
+            choices: [
+              ["cloudflare", "Cloudflare", "Good for edge app, Durable Objects, and WebSockets-style rooms."],
+              ["vercel", "Vercel", "Good for Next.js UI; realtime needs a companion service."],
+              ["fly", "Fly.io", "Good for regional long-lived realtime servers."],
+              ["railway", "Railway", "Simple app/server hosting."],
+              ["other", "Other or self-hosted", "Specify in notes."]
+            ]
+          },
+          {
+            id: 7,
+            type: "single",
+            text: "Do you want anonymous rooms only, or user accounts and persistent profiles?",
+            choices: [
+              ["anonymous_rooms", "Anonymous rooms", "Fastest party-game flow."],
+              ["local_profiles", "Local saved profiles", "Progress on same device without accounts."],
+              ["accounts_optional", "Optional accounts", "Supports persistence without blocking guests."],
+              ["accounts_required", "Required accounts", "Best for global stats, slowest for parties."]
+            ]
+          },
+          {
+            id: 8,
+            type: "single",
+            text: "Should rooms be private by code/link only, or should there be public lobbies?",
+            choices: [
+              ["private_only", "Private code/link only", "Best for remote party sessions."],
+              ["private_with_spectators", "Private rooms plus spectators", "Useful for bigger events."],
+              ["public_lobbies", "Public lobbies", "Requires moderation and matchmaking."],
+              ["later", "Defer lobbies", "Build room links first."]
+            ]
+          },
+          {
+            id: 9,
+            type: "single",
+            text: "Should remote players need the shared stage view?",
+            choices: [
+              ["controller_full_play", "Phone view fully playable", "Best for remote players who cannot see the stage."],
+              ["stage_required", "Shared stage required", "Closest to Netflix's living-room model."],
+              ["hybrid", "Hybrid", "Phone works alone, stage is better socially."],
+              ["undecided", "Decide later", "Prototype both layouts lightly."]
+            ]
+          }
+        ]
+      },
+      {
+        id: "gameplay",
+        title: "Gameplay Scope",
+        accent: "#f07167",
+        questions: [
+          {
+            id: 10,
+            type: "single",
+            text: "Is Party Mode the first build target, with Daily Puzzle deferred?",
+            choices: [
+              ["party_first", "Party Mode first", "Best path for multiplayer proof."],
+              ["daily_parallel", "Daily Puzzle in parallel", "Useful if async retention matters early."],
+              ["daily_first", "Daily Puzzle first", "Simpler multiplayer, less aligned with party goal."],
+              ["all_modes", "All modes in v1", "Largest scope."]
+            ]
+          },
+          {
+            id: 11,
+            type: "single",
+            text: "Should all advanced options be unlocked by default?",
+            choices: [
+              ["all_available", "All available by default", "Best for testing and power users."],
+              ["soft_unlocks", "Soft unlocks", "Show progression but allow override."],
+              ["netflix_like_unlocks", "Netflix-like unlocks", "More faithful, slower to test."],
+              ["no_advanced_v1", "No advanced options in v1", "Simplest first milestone."]
+            ]
+          },
+          {
+            id: 12,
+            type: "single",
+            text: "Should word challenges be in the first multiplayer milestone?",
+            choices: [
+              ["defer", "Defer", "Ship core rounds first."],
+              ["basic", "Basic challenge flow", "One challenge/pass phase, no definitions."],
+              ["full", "Full challenge parity", "Includes reveal, defense, definitions, scoring adjustment."],
+              ["skip", "Skip entirely", "Keep rounds fast and simple."]
+            ]
+          },
+          {
+            id: 13,
+            type: "single",
+            text: "Should pranks be replicated, replaced with original effects, or skipped?",
+            choices: [
+              ["original_effects", "Original effects later", "Avoid copying unknown Netflix effects."],
+              ["skip_v1", "Skip v1", "Keep competitive word play clean."],
+              ["replicate_if_captured", "Replicate if captured", "Requires more live-game research."],
+              ["no_pranks", "No pranks ever", "Sharper Boggle-like experience."]
+            ]
+          },
+          {
+            id: 14,
+            type: "single",
+            text: "Should hints be enabled by default, and should they affect score or achievements?",
+            choices: [
+              ["enabled_no_penalty", "Enabled, no penalty", "Closest to observed game behavior."],
+              ["enabled_achievement_flag", "Enabled, achievement flag only", "Keeps scoring fair but tracks help."],
+              ["disabled_default", "Disabled by default", "Cleaner competitive mode."],
+              ["host_configurable", "Host configurable", "Best for casual vs serious rooms."]
+            ]
+          },
+          {
+            id: 15,
+            type: "single",
+            text: "Should minimum word length affect hint generation and precomputed word set?",
+            choices: [
+              ["yes", "Yes", "Hints and valid-set cache obey room settings."],
+              ["hint_only", "Hints only", "Server keeps all words but hint filters length."],
+              ["no", "No", "Minimum length only affects submission scoring."],
+              ["undecided", "Decide during engine build", "Mark as engine test case."]
+            ]
+          }
+        ]
+      },
+      {
+        id: "dictionary",
+        title: "Dictionary and Language",
+        accent: "#9a5b00",
+        questions: [
+          {
+            id: 16,
+            type: "single",
+            text: "Is English-only acceptable for v1?",
+            choices: [
+              ["english_only", "English-only v1", "Fastest path to a tested dictionary."],
+              ["english_then_more", "English first, more later", "Keep data model language-aware."],
+              ["multi_language_v1", "Multi-language v1", "Much larger dictionary and QA scope."],
+              ["undecided", "Decide after prototype", "Avoid hardcoded English assumptions."]
+            ]
+          },
+          {
+            id: 17,
+            type: "single",
+            text: "Which dictionary source should we use?",
+            choices: [
+              ["open_source", "Open-source word list", "Fastest and cheapest; needs filtering."],
+              ["licensed", "Licensed commercial list", "Best for production word quality."],
+              ["user_provided", "User-provided list", "Good if you already have a preferred source."],
+              ["hybrid", "Hybrid", "Open list for engine, licensed later."]
+            ]
+          },
+          {
+            id: 18,
+            type: "single",
+            text: "How strict should filtering be for archaic, offensive, proper-noun, and domain-specific words?",
+            choices: [
+              ["modern_clean", "Modern clean list", "Closest to Netflix's documented intent."],
+              ["permissive", "Permissive", "More words, more disputes."],
+              ["family_safe_strict", "Family-safe strict", "Reduces offensive/edge-case words."],
+              ["host_tunable", "Host tunable", "Casual and strict room presets."]
+            ]
+          },
+          {
+            id: 19,
+            type: "single",
+            text: "Do you want definitions for challenged words in v1?",
+            choices: [
+              ["no_definitions_v1", "No definitions in v1", "Keep challenge flow social/manual."],
+              ["licensed_api", "Licensed API", "Best production quality."],
+              ["free_api", "Free/public API", "Okay for prototype, check reliability/license."],
+              ["local_definitions", "Local definitions bundle", "Fast lookup, larger data footprint."]
+            ]
+          }
+        ]
+      },
+      {
+        id: "multiplayer",
+        title: "Multiplayer and Fairness",
+        accent: "#6f4bb8",
+        questions: [
+          {
+            id: 20,
+            type: "single",
+            text: "Should the 20-player cap be hard, or should rooms support spectators beyond 20?",
+            choices: [
+              ["hard_20", "Hard 20-player cap", "Simplest capacity promise."],
+              ["spectators", "20 players plus spectators", "Better for events and streams."],
+              ["soft_cap", "Soft cap with warning", "Allows larger tests without guarantee."],
+              ["lower_v1", "Lower v1 cap", "Ship 8-12 first, scale later."]
+            ]
+          },
+          {
+            id: 21,
+            type: "single",
+            text: "What latency grace period is acceptable for final-second submissions?",
+            choices: [
+              ["0ms", "0 ms", "Strict server cutoff."],
+              ["500ms", "500 ms", "Balanced fairness and remote tolerance."],
+              ["1000ms", "1 second", "Friendlier for global remote play."],
+              ["2000ms", "2 seconds", "Very forgiving, easier to perceive as unfair."]
+            ]
+          },
+          {
+            id: 22,
+            type: "single",
+            text: "If the host disconnects mid-round, should the round continue and host transfer automatically?",
+            choices: [
+              ["continue_auto_transfer", "Continue and auto-transfer", "Best player experience."],
+              ["continue_no_host", "Continue, transfer after round", "Avoids mid-round control changes."],
+              ["pause_transfer", "Pause and transfer", "Fair but disrupts pace."],
+              ["end_round", "End round", "Simplest, harshest."]
+            ]
+          },
+          {
+            id: 23,
+            type: "single",
+            text: "If a player disconnects mid-round, should their submitted words remain eligible for unique/double scoring?",
+            choices: [
+              ["remain_eligible", "Remain eligible", "Fairest to work already submitted."],
+              ["score_only_no_unique", "Score but no unique bonus", "Prevents disconnected players shaping uniqueness."],
+              ["remove_from_round", "Remove from round", "Simple but punitive."],
+              ["host_decides", "Host decides", "Manual social control."]
+            ]
+          },
+          {
+            id: 24,
+            type: "single",
+            text: "Should players be able to join from multiple devices using the same profile?",
+            choices: [
+              ["one_active_device", "One active device", "Simplest anti-cheat and reconnect model."],
+              ["allow_handoff", "Allow handoff", "New device replaces old device."],
+              ["multi_device_same_profile", "Multiple devices", "Convenient but harder to secure."],
+              ["accounts_only", "Only with account auth", "Requires identity system."]
+            ]
+          },
+          {
+            id: 25,
+            type: "single",
+            text: "Should there be anti-cheat protections against scripted word submissions?",
+            choices: [
+              ["basic_v1", "Basic v1 protections", "Rate limits, path validation, server authority."],
+              ["strong_v1", "Strong v1 protections", "Bot detection, caps, anomaly scoring."],
+              ["private_light", "Light for private rooms", "Trust social groups."],
+              ["later", "Later", "Risky if public deployment is likely."]
+            ]
+          }
+        ]
+      },
+      {
+        id: "ui",
+        title: "UI and Experience",
+        accent: "#129a8e",
+        questions: [
+          {
+            id: 26,
+            type: "single",
+            text: "Do you want a dedicated main-screen route optimized for TVs/projectors?",
+            choices: [
+              ["yes_stage", "Yes, dedicated stage", "Closest to the party-game model."],
+              ["responsive_same_app", "Responsive same app", "Simpler routing, less TV polish."],
+              ["phone_first", "Phone-first only", "Remote-only, stage later."],
+              ["undecided", "Decide after prototype", "Keep routes flexible."]
+            ]
+          },
+          {
+            id: 27,
+            type: "single",
+            text: "Should the phone controller include the same persistent top buttons as Netflix's UI, or simplify them?",
+            choices: [
+              ["similar_top_controls", "Similar top controls", "Best visual parity."],
+              ["simplified_menu", "Simplified menu", "Cleaner for web clone."],
+              ["contextual_controls", "Contextual controls", "Show controls only when relevant."],
+              ["mobile_native_feel", "Mobile-native feel", "Less clone-like, more ergonomic."]
+            ]
+          },
+          {
+            id: 28,
+            type: "single",
+            text: "How important is matching the 3D countdown typography and tile animation?",
+            choices: [
+              ["high", "High", "Invest in animation and visual parity."],
+              ["medium", "Medium", "Match timing/energy, not exact art."],
+              ["low", "Low", "Use simple countdown and tile states."],
+              ["later", "Later polish", "Ship function first."]
+            ]
+          },
+          {
+            id: 29,
+            type: "single",
+            text: "Should the 20-player scoreboard prioritize top scores, host/current player, recently scoring players, or a carousel?",
+            choices: [
+              ["top_scores", "Top scores", "Best for competitive readability."],
+              ["current_and_top", "Current player plus top", "Best for controller personal context."],
+              ["recent_activity", "Recent scoring activity", "Best for lively party feel."],
+              ["carousel", "Carousel all players", "Most inclusive, less scannable."],
+              ["dense_grid", "Dense grid", "All players visible on large screens."]
+            ]
+          },
+          {
+            id: 30,
+            type: "single",
+            text: "Should end-round reveal be playful and animated, or dense and fast?",
+            choices: [
+              ["playful", "Playful and animated", "Best party feel."],
+              ["balanced", "Balanced", "Quick reveal with a few celebratory moments."],
+              ["dense_fast", "Dense and fast", "Best for repeated competitive rounds."],
+              ["host_configurable", "Host configurable", "Casual vs tournament pacing."]
+            ]
+          }
+        ]
+      },
+      {
+        id: "progression",
+        title: "Progression",
+        accent: "#f2b84b",
+        questions: [
+          {
+            id: 31,
+            type: "single",
+            text: "Do you want achievements, trophy room, and unlocks in v1?",
+            choices: [
+              ["defer", "Defer", "Focus on multiplayer core."],
+              ["achievements_only", "Achievements only", "Progress without gating settings."],
+              ["full_progression", "Full progression", "Closest to Netflix structure."],
+              ["none", "No progression", "Pure party game."]
+            ]
+          },
+          {
+            id: 32,
+            type: "single",
+            text: "Should progress persist across rooms/devices?",
+            choices: [
+              ["same_device", "Same device only", "Works with anonymous/local profiles."],
+              ["account_cloud", "Cloud account", "Best persistence, more auth work."],
+              ["room_only", "Room only", "No long-term profile data."],
+              ["later", "Later", "Keep model ready but do not ship persistence."]
+            ]
+          },
+          {
+            id: 33,
+            type: "single",
+            text: "Should daily streaks exist, and how should missed days be handled?",
+            choices: [
+              ["no_streaks_v1", "No streaks in v1", "Daily puzzle can launch simpler."],
+              ["strict_streaks", "Strict streaks", "Missed day resets."],
+              ["streak_freeze", "Streak freeze", "More forgiving retention system."],
+              ["weekly_rhythm", "Weekly rhythm", "Less pressure than daily streaks."]
+            ]
+          },
+          {
+            id: 34,
+            type: "single",
+            text: "Should daily puzzles compare inside a friend group, or globally across all users?",
+            choices: [
+              ["friend_group", "Friend group", "Best privacy and social relevance."],
+              ["global", "Global", "Needs abuse prevention and scale."],
+              ["both", "Both", "More complete, more product work."],
+              ["no_daily_v1", "No Daily Puzzle v1", "Avoid ranking decisions now."]
+            ]
+          }
+        ]
+      },
+      {
+        id: "ops",
+        title: "Production Operations",
+        accent: "#4277c7",
+        questions: [
+          {
+            id: 35,
+            type: "single",
+            text: "How long should inactive rooms live?",
+            choices: [
+              ["30m", "30 minutes", "Good default for party sessions."],
+              ["2h", "2 hours", "Safer for interruptions."],
+              ["24h", "24 hours", "Useful for async return, higher storage."],
+              ["host_configurable", "Host configurable", "More control, more settings."]
+            ]
+          },
+          {
+            id: 36,
+            type: "single",
+            text: "Do we need moderation controls for names and avatars?",
+            choices: [
+              ["basic_filter", "Basic filter", "Profanity filter and host kick/delete."],
+              ["host_controls", "Host controls only", "Manual social moderation."],
+              ["full_moderation", "Full moderation", "Needed for public lobbies."],
+              ["none_private", "None for private v1", "Fastest, least safe if shared widely."]
+            ]
+          },
+          {
+            id: 37,
+            type: "multi",
+            text: "Which analytics do we need?",
+            choices: [
+              ["retention", "Retention", "Return play, daily usage, streaks."],
+              ["round_completion", "Round completion", "Starts, finishes, abandons."],
+              ["word_submissions", "Word submissions", "Accepted/rejected rates and validation load."],
+              ["connection_failures", "Connection failures", "Join, reconnect, disconnect, latency."],
+              ["none_v1", "None in v1", "Use only local logs during prototype."]
+            ]
+          },
+          {
+            id: 38,
+            type: "multi",
+            text: "What level of accessibility is required for v1?",
+            choices: [
+              ["keyboard", "Keyboard support", "Playable core routes without pointer-only controls."],
+              ["screen_reader", "Screen reader support", "Semantic state and announcements."],
+              ["contrast", "High contrast", "Readable tiles and controls."],
+              ["reduced_motion", "Reduced motion", "Disable nonessential animation."],
+              ["haptics_optional", "Haptics optional", "Mobile feedback with off switch."]
+            ]
+          },
+          {
+            id: 39,
+            type: "multi",
+            text: "What browsers/devices are target-supported?",
+            choices: [
+              ["ios_safari", "iOS Safari", "Most common phone-controller target."],
+              ["android_chrome", "Android Chrome", "Core phone-controller target."],
+              ["desktop_chrome", "Desktop Chrome", "Stage and development baseline."],
+              ["desktop_safari", "Desktop Safari", "Mac stage support."],
+              ["smart_tv_browser", "Smart TV browser", "Harder QA, closer TV deployment."]
+            ]
+          },
+          {
+            id: 40,
+            type: "single",
+            text: "Should we build load tests before UI polish, given the 20-player goal?",
+            choices: [
+              ["yes_early", "Yes, early", "Best for proving realtime architecture."],
+              ["after_core", "After core loop", "Build minimal multiplayer, then load-test."],
+              ["after_ui", "After UI polish", "Riskier for 20-player goal."],
+              ["manual_only", "Manual testing only", "Okay for private prototype, not production."]
+            ]
+          }
+        ]
+      }
+    ];
+
+    let answers = loadAnswers();
+    let activeFilter = "all";
+
+    function loadAnswers() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch {
+        return {};
+      }
+    }
+
+    function saveAnswers() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(answers));
+    }
+
+    function allQuestions() {
+      return categories.flatMap(category => category.questions.map(question => ({ ...question, categoryId: category.id, categoryTitle: category.title })));
+    }
+
+    function questionById(id) {
+      return allQuestions().find(question => String(question.id) === String(id));
+    }
+
+    function selectedValues(question) {
+      const answer = answers[question.id];
+      return Array.isArray(answer?.choices) ? answer.choices : [];
+    }
+
+    function isAnswered(question) {
+      return selectedValues(question).length > 0 || Boolean(answers[question.id]?.note?.trim());
+    }
+
+    function renderFilters() {
+      const root = document.getElementById("filters");
+      const filters = [{ id: "all", title: "All" }, ...categories.map(({ id, title }) => ({ id, title }))];
+      root.innerHTML = filters.map(filter => {
+        const active = filter.id === activeFilter ? " is-active" : "";
+        return `<button class="filter-button${active}" data-filter="${filter.id}" type="button">${escapeHtml(filter.title)}</button>`;
+      }).join("");
+    }
+
+    function renderQuestions() {
+      const root = document.getElementById("questionRoot");
+      const visibleCategories = activeFilter === "all" ? categories : categories.filter(category => category.id === activeFilter);
+
+      root.innerHTML = visibleCategories.map(category => {
+        const answered = category.questions.filter(isAnswered).length;
+        return `
+          <section class="category" id="category-${category.id}">
+            <div class="category-header">
+              <div class="category-title">
+                <span class="category-dot" style="background:${category.accent}; box-shadow:0 0 0 4px ${hexToRgba(category.accent, 0.14)}"></span>
+                <h3>${escapeHtml(category.title)}</h3>
+              </div>
+              <span class="category-progress">${answered}/${category.questions.length} answered</span>
+            </div>
+            <div class="question-grid">
+              ${category.questions.map(renderQuestion).join("")}
+            </div>
+          </section>
+        `;
+      }).join("");
+
+      if (!root.innerHTML.trim()) {
+        root.innerHTML = `<div class="empty-state">No questions match this filter.</div>`;
+      }
+    }
+
+    function renderQuestion(question) {
+      const values = selectedValues(question);
+      const note = answers[question.id]?.note || "";
+      const answeredClass = isAnswered(question) ? " is-answered" : "";
+      const inputType = question.type === "multi" ? "checkbox" : "radio";
+      const mode = question.type === "multi" ? "Choose any" : "Choose one";
+
+      return `
+        <article class="question-card${answeredClass}" id="q-${question.id}" data-question-id="${question.id}">
+          <div class="question-meta">
+            <span class="qid">Q${question.id}</span>
+            <span class="mode-tag">${mode}</span>
+          </div>
+          <p class="question-text">${escapeHtml(question.text)}</p>
+          <div class="choices">
+            ${question.choices.map(([value, title, desc]) => `
+              <label class="choice" data-type="${question.type}">
+                <input
+                  type="${inputType}"
+                  name="q-${question.id}"
+                  value="${escapeAttr(value)}"
+                  ${values.includes(value) ? "checked" : ""}
+                >
+                <span class="choice-control" aria-hidden="true"></span>
+                <span class="choice-copy">
+                  <span class="choice-title">${escapeHtml(title)}</span>
+                  <span class="choice-desc">${escapeHtml(desc)}</span>
+                </span>
+              </label>
+            `).join("")}
+          </div>
+          <textarea class="note" name="note-${question.id}" placeholder="Optional note">${escapeHtml(note)}</textarea>
+        </article>
+      `;
+    }
+
+    function syncStateFromEvent(event) {
+      const card = event.target.closest(".question-card");
+      if (!card) return;
+
+      const id = card.dataset.questionId;
+      const question = questionById(id);
+      if (!question) return;
+
+      const checked = [...card.querySelectorAll("input:checked")].map(input => input.value);
+      const note = card.querySelector(".note")?.value || "";
+      answers[id] = { choices: checked, note };
+
+      if (checked.length === 0 && note.trim() === "") {
+        delete answers[id];
+      }
+
+      saveAnswers();
+      updateProgress();
+      card.classList.toggle("is-answered", isAnswered(question));
+      renderCategoryProgress();
+      updateSummaryIfOpen();
+    }
+
+    function renderCategoryProgress() {
+      document.querySelectorAll(".category").forEach(section => {
+        const id = section.id.replace("category-", "");
+        const category = categories.find(item => item.id === id);
+        const progress = section.querySelector(".category-progress");
+        if (!category || !progress) return;
+        progress.textContent = `${category.questions.filter(isAnswered).length}/${category.questions.length} answered`;
+      });
+    }
+
+    function updateProgress() {
+      const questions = allQuestions();
+      const answered = questions.filter(isAnswered).length;
+      document.getElementById("answeredCount").textContent = answered;
+      document.getElementById("totalCount").textContent = questions.length;
+      document.getElementById("progressFill").style.width = `${Math.round((answered / questions.length) * 100)}%`;
+    }
+
+    function jumpToNextUnanswered() {
+      const next = allQuestions().find(question => !isAnswered(question));
+      if (!next) {
+        showToast("All questions have an answer.");
+        return;
+      }
+      activeFilter = "all";
+      render();
+      requestAnimationFrame(() => {
+        document.getElementById(`q-${next.id}`)?.scrollIntoView({ block: "center" });
+        document.getElementById(`q-${next.id}`)?.querySelector("input, textarea")?.focus({ preventScroll: true });
+      });
+    }
+
+    function buildExport() {
+      return {
+        artifact: "boggle-party-decisions",
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        answeredCount: allQuestions().filter(isAnswered).length,
+        totalCount: allQuestions().length,
+        answers: allQuestions().map(question => {
+          const selected = selectedValues(question);
+          const selectedLabels = question.choices
+            .filter(([value]) => selected.includes(value))
+            .map(([value, title]) => ({ value, title }));
+
+          return {
+            id: question.id,
+            category: question.categoryTitle,
+            question: question.text,
+            type: question.type,
+            selected: selectedLabels,
+            note: answers[question.id]?.note || ""
+          };
+        })
+      };
+    }
+
+    function buildMarkdown() {
+      const data = buildExport();
+      const lines = [
+        "# Boggle Party Clone Decisions",
+        "",
+        `Exported: ${data.exportedAt}`,
+        `Answered: ${data.answeredCount}/${data.totalCount}`,
+        ""
+      ];
+
+      categories.forEach(category => {
+        lines.push(`## ${category.title}`, "");
+        category.questions.forEach(question => {
+          const answer = data.answers.find(item => item.id === question.id);
+          const selected = answer.selected.map(item => item.title).join(", ") || "Unanswered";
+          lines.push(`### Q${question.id}. ${question.text}`);
+          lines.push(`Answer: ${selected}`);
+          if (answer.note.trim()) {
+            lines.push(`Note: ${answer.note.trim()}`);
+          }
+          lines.push("");
+        });
+      });
+
+      return lines.join("\n");
+    }
+
+    async function copyMarkdown() {
+      const markdown = buildMarkdown();
+      try {
+        await navigator.clipboard.writeText(markdown);
+        showToast("Answers copied as Markdown.");
+      } catch {
+        showSummary();
+        showToast("Clipboard blocked. Summary opened instead.");
+      }
+    }
+
+    function downloadJson() {
+      const data = JSON.stringify(buildExport(), null, 2);
+      const blob = new Blob([data], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `boggle-party-decisions-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      showToast("JSON downloaded.");
+    }
+
+    function showSummary() {
+      const panel = document.getElementById("summaryPanel");
+      const output = document.getElementById("summaryOutput");
+      output.textContent = buildMarkdown();
+      panel.classList.add("is-visible");
+      panel.scrollIntoView({ block: "start" });
+    }
+
+    function updateSummaryIfOpen() {
+      const panel = document.getElementById("summaryPanel");
+      if (panel.classList.contains("is-visible")) {
+        document.getElementById("summaryOutput").textContent = buildMarkdown();
+      }
+    }
+
+    function closeSummary() {
+      document.getElementById("summaryPanel").classList.remove("is-visible");
+    }
+
+    function resetAll() {
+      const confirmed = window.confirm("Clear all selected answers and notes?");
+      if (!confirmed) return;
+      answers = {};
+      saveAnswers();
+      render();
+      closeSummary();
+      showToast("All answers cleared.");
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("is-visible");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove("is-visible"), 2200);
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value);
+    }
+
+    function hexToRgba(hex, alpha) {
+      const clean = hex.replace("#", "");
+      const r = parseInt(clean.slice(0, 2), 16);
+      const g = parseInt(clean.slice(2, 4), 16);
+      const b = parseInt(clean.slice(4, 6), 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function bindEvents() {
+      document.getElementById("questionRoot").addEventListener("change", syncStateFromEvent);
+      document.getElementById("questionRoot").addEventListener("input", event => {
+        if (event.target.matches(".note")) syncStateFromEvent(event);
+      });
+
+      document.getElementById("filters").addEventListener("click", event => {
+        const button = event.target.closest("[data-filter]");
+        if (!button) return;
+        activeFilter = button.dataset.filter;
+        render();
+      });
+
+      document.getElementById("jumpNext").addEventListener("click", jumpToNextUnanswered);
+      document.getElementById("copyMarkdown").addEventListener("click", copyMarkdown);
+      document.getElementById("downloadJson").addEventListener("click", downloadJson);
+      document.getElementById("toggleSummary").addEventListener("click", showSummary);
+      document.getElementById("closeSummary").addEventListener("click", closeSummary);
+      document.getElementById("resetAll").addEventListener("click", resetAll);
+    }
+
+    function render() {
+      renderFilters();
+      renderQuestions();
+      updateProgress();
+      updateSummaryIfOpen();
+    }
+
+    bindEvents();
+    render();
+  </script>
+</body>
+</html>

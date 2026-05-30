@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Boggle Party">
+  <rect width="512" height="512" rx="112" fill="#506bea"/>
+  <rect x="72" y="92" width="368" height="328" rx="72" fill="#82b8ff"/>
+  <g fill="#42105f">
+    <rect x="104" y="124" width="132" height="132" rx="28"/>
+    <rect x="276" y="124" width="132" height="132" rx="28"/>
+    <rect x="104" y="288" width="132" height="100" rx="28"/>
+    <rect x="276" y="288" width="132" height="100" rx="28"/>
+  </g>
+  <g fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="112" font-weight="800" text-anchor="middle" dominant-baseline="central">
+    <text x="170" y="194">B</text>
+    <text x="342" y="194">P</text>
+    <text x="170" y="342">4</text>
+    <text x="342" y="342">4</text>
+  </g>
+  <path d="M238 342h36M256 324v36" stroke="#6ff2a7" stroke-width="24" stroke-linecap="round"/>
+</svg>

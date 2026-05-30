@@ -1,0 +1,21 @@
+{
+  "name": "Boggle Party Prototype",
+  "short_name": "Boggle Party",
+  "description": "A mobile-ready Boggle Party prototype for local and remote room play.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#5b6ff0",
+  "theme_color": "#506bea",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
