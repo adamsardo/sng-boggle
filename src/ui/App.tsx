@@ -1,4 +1,9 @@
+import { useEffect, useState } from "react";
 import { ControllerPrototype, StagePrototype } from "./controller/ControllerPrototype";
+import {
+  SERVICE_WORKER_UPDATE_EVENT,
+  applyPendingServiceWorkerUpdate,
+} from "./pwaUpdates";
 
 type RouteKind = "home" | "stage" | "controller";
 
@@ -12,16 +17,47 @@ function getRouteKind(pathname: string): RouteKind {
 
 export function App() {
   const route = getRouteKind(window.location.pathname);
+  const [showUpdatePrompt, setShowUpdatePrompt] = useState(false);
+
+  useEffect(() => {
+    const onUpdateAvailable = () => setShowUpdatePrompt(true);
+    window.addEventListener(SERVICE_WORKER_UPDATE_EVENT, onUpdateAvailable);
+    return () => window.removeEventListener(SERVICE_WORKER_UPDATE_EVENT, onUpdateAvailable);
+  }, []);
 
   if (route === "stage") {
-    return <StageShell />;
+    return (
+      <>
+        <StageShell />
+        <UpdateAvailablePrompt
+          visible={showUpdatePrompt}
+          onDismiss={() => setShowUpdatePrompt(false)}
+        />
+      </>
+    );
   }
 
   if (route === "controller") {
-    return <ControllerShell />;
+    return (
+      <>
+        <ControllerShell />
+        <UpdateAvailablePrompt
+          visible={showUpdatePrompt}
+          onDismiss={() => setShowUpdatePrompt(false)}
+        />
+      </>
+    );
   }
 
-  return <HomeShell />;
+  return (
+    <>
+      <HomeShell />
+      <UpdateAvailablePrompt
+        visible={showUpdatePrompt}
+        onDismiss={() => setShowUpdatePrompt(false)}
+      />
+    </>
+  );
 }
 
 function HomeShell() {
@@ -53,4 +89,29 @@ function StageShell() {
 
 function ControllerShell() {
   return <ControllerPrototype />;
+}
+
+function UpdateAvailablePrompt({
+  visible,
+  onDismiss,
+}: {
+  visible: boolean;
+  onDismiss: () => void;
+}) {
+  if (!visible) return null;
+
+  return (
+    <aside className="update-toast" role="status" aria-live="polite">
+      <div>
+        <strong>Update available</strong>
+        <span>Reload for the newest version.</span>
+      </div>
+      <button className="update-toast-reload" type="button" onClick={applyPendingServiceWorkerUpdate}>
+        Reload
+      </button>
+      <button className="update-toast-dismiss" type="button" onClick={onDismiss}>
+        Later
+      </button>
+    </aside>
+  );
 }

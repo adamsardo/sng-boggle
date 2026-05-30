@@ -28,4 +28,15 @@ describe("PWA assets", () => {
     expect(serviceWorker).toContain("CACHE_NAME");
     expect(serviceWorker).toContain("APP_SHELL");
   });
+
+  it("activates waiting updates only after the app asks to reload", () => {
+    const serviceWorker = readFileSync(resolve("public/service-worker.js"), "utf8");
+    const updateFlow = readFileSync(resolve("src/ui/pwaUpdates.ts"), "utf8");
+
+    expect(serviceWorker).toContain('event.data?.type === "SKIP_WAITING"');
+    expect(updateFlow).toContain("registration.waiting");
+    expect(updateFlow).toContain("SERVICE_WORKER_UPDATE_EVENT");
+    expect(updateFlow).toContain("controllerchange");
+    expect(updateFlow).toContain("window.location.reload()");
+  });
 });

@@ -261,6 +261,64 @@ p {
   background: #b7f5f2;
 }
 
+.update-toast {
+  position: fixed;
+  top: calc(12px + env(safe-area-inset-top));
+  left: 50%;
+  z-index: 20;
+  width: min(calc(100vw - 24px), 430px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+  border: 3px solid #ffffff;
+  border-radius: 999px;
+  padding: 8px 8px 8px 16px;
+  background: rgba(39, 2, 57, 0.96);
+  color: #ffffff;
+  box-shadow: 0 8px 0 rgba(51, 6, 74, 0.38);
+  transform: translateX(-50%);
+}
+
+.update-toast div {
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+}
+
+.update-toast strong {
+  font-size: 0.92rem;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.update-toast span {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.update-toast-reload,
+.update-toast-dismiss {
+  min-height: 34px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  padding: 0 12px;
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.update-toast-reload {
+  background: var(--mint);
+}
+
+.update-toast-dismiss {
+  background: #b7f5f2;
+}
+
 .controller-board {
   width: 100%;
   display: grid;

@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./ui/App";
+import { registerServiceWorker } from "./ui/pwaUpdates";
 import "./ui/styles.css";
 
 createRoot(document.getElementById("root")!).render(
@@ -9,10 +10,4 @@ createRoot(document.getElementById("root")!).render(
   </StrictMode>,
 );
 
-if ("serviceWorker" in navigator && import.meta.env.PROD) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/service-worker.js").catch((error: unknown) => {
-      console.warn("Service worker registration failed.", error);
-    });
-  });
-}
+registerServiceWorker();

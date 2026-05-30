@@ -566,6 +566,7 @@ Phone controller route
 PWA shell
   -> Web app manifest
   -> Service worker app-shell cache
+  -> Update-available reload prompt for waiting service workers
   -> Network-only `/api/*` and `/ws/*`
 
 Pure game engine
@@ -616,6 +617,7 @@ Recommended client responsibilities:
 - handle reconnect and state resync
 - persist local profile/progress
 - register the service worker only in production builds
+- prompt users to reload when a new service worker is waiting
 - keep room APIs and WebSocket routes network-only
 - show a clear reconnect/offline state instead of pretending active rounds work
   offline
@@ -897,6 +899,7 @@ Build:
 - Basic stage board render.
 - First PWA baseline: manifest metadata, app icon, production-only service
   worker registration, and an offline shell cache that excludes realtime routes.
+- Small update-available reload prompt when a new service worker is waiting.
 
 Tests:
 
@@ -911,6 +914,7 @@ Tests:
   - hint request
   - reduced-motion hint behavior
 - PWA asset smoke tests for manifest and realtime-route cache exclusions.
+- PWA update prompt smoke test.
 - Accessibility smoke with keyboard path.
 - Visual screenshots for core controller states.
 
@@ -1053,6 +1057,7 @@ Build:
 - Cloudflare preview deploy.
 - PWA install QA on iOS Safari and Android Chrome.
 - Offline shell QA for home/controller/stage route fallback.
+- Waiting-service-worker update prompt QA.
 - Reconnect/offline messaging QA for rooms when network returns.
 - Production/private deploy checklist.
 
@@ -1072,6 +1077,7 @@ Tests:
 - Manual iOS Safari and Android Chrome playtest.
 - PWA install/add-to-home-screen smoke on iOS Safari and Android Chrome.
 - Offline shell smoke test.
+- Service-worker update/reload prompt smoke test.
 - Desktop Chrome and Safari playtest.
 - Smart-TV browser smoke test.
 - Final 20-player load test.

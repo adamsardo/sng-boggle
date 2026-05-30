@@ -43,6 +43,15 @@ test.describe("local controller prototype", () => {
     await expect(page.getByTestId("feedback")).not.toContainText("A tile can only be used once.");
 
     await page.mouse.up();
+    await page.getByRole("button", { name: "Clear" }).click();
+    await tapWord(page, [
+      [3, 0],
+      [3, 1],
+      [3, 2],
+    ]);
+
+    await expect(page.getByTestId("feedback")).toContainText("Added MAT.");
+    await expect(page.getByTestId("found-count")).toHaveText("1");
   });
 
   test("fixed-board dictionary accepts MAT", async ({ page }) => {
@@ -55,6 +64,17 @@ test.describe("local controller prototype", () => {
 
     await expect(page.getByTestId("feedback")).toContainText("Added MAT.");
     await expect(page.getByTestId("found-count")).toHaveText("1");
+  });
+
+  test("service worker update prompt can be dismissed", async ({ page }) => {
+    await openController(page);
+    await page.evaluate(() => {
+      window.dispatchEvent(new Event("boggle:service-worker-update"));
+    });
+
+    await expect(page.getByText("Update available")).toBeVisible();
+    await page.getByRole("button", { name: "Later" }).click();
+    await expect(page.getByText("Update available")).toBeHidden();
   });
 
   test("invalid non-adjacent path is rejected", async ({ page }) => {

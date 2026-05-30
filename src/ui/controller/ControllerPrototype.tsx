@@ -258,6 +258,7 @@ export function ControllerPrototype() {
           onPointerUp={onPointerUp}
           onPointerCancel={() => {
             swipeSession.current = null;
+            ignoreNextClick.current = false;
           }}
         >
           {localBoard.tiles.flat().map((tile) => {
